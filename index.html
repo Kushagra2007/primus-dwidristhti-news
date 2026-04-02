@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spectrum News | Media Bias Tracker</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --left-color: #3b82f6;   /* Blue */
+            --center-color: #94a3b8; /* Gray */
+            --right-color: #ef4444;  /* Red */
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background-color: #ffffff;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styles */
+        aside {
+            width: 320px;
+            background-color: #ffffff;
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            padding: 1rem 0;
+        }
+
+        .sidebar-title {
+            padding: 0 1.5rem 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .story-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .story-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        .story-item.active {
+            background-color: #e2e8f0;
+            border-left: 4px solid var(--text-main);
+        }
+
+        .story-item h3 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .story-item p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Main Content Styles */
+        main {
+            flex: 1;
+            padding: 2rem 3rem;
+            overflow-y: auto;
+            background-color: var(--bg-color);
+        }
+
+        #main-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        #main-summary {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* Bias Bar Visualization */
+        .bias-section {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .bias-section h4 {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .bias-bar {
+            display: flex;
+            height: 24px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .bias-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .bias-left { background-color: var(--left-color); }
+        .bias-center { background-color: var(--center-color); }
+        .bias-right { background-color: var(--right-color); }
+
+        .bias-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Articles Grid */
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .article-card {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border-top: 4px solid transparent;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .card-left { border-top-color: var(--left-color); }
+        .card-center { border-top-color: var(--center-color); }
+        .card-right { border-top-color: var(--right-color); }
+
+        .bias-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .badge-left { background-color: var(--left-color); }
+        .badge-center { background-color: var(--center-color); }
+        .badge-right { background-color: var(--right-color); }
+
+        .article-source {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .article-headline {
+            font-size: 1.1rem;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .articles-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            aside {
+                width: 100%;
+                height: 250px;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            main {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Spectrum News <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">Hackathon Prototype</span></h1>
+    </header>
+
+    <div class="container">
+        <aside>
+            <div class="sidebar-title">Trending Stories</div>
+            <div id="story-list">
+                </div>
+        </aside>
+
+        <main>
+            <h2 id="main-title">Select a story</h2>
+            <p id="main-summary">Click on a trending story from the sidebar to view its coverage across the political spectrum.</p>
+
+            <div id="dashboard-content" style="display: none;">
+                
+                <div class="bias-section">
+                    <h4>Bias Distribution</h4>
+                    <div class="bias-bar">
+                        <div id="bar-left" class="bias-segment bias-left"></div>
+                        <div id="bar-center" class="bias-segment bias-center"></div>
+                        <div id="bar-right" class="bias-segment bias-right"></div>
+                    </div>
+                    <div class="bias-labels">
+                        <span style="color: var(--left-color)">Left</span>
+                        <span style="color: var(--center-color)">Center</span>
+                        <span style="color: var(--right-color)">Right</span>
+                    </div>
+                </div>
+
+                <h4 style="margin-bottom: 1rem; font-size: 1.1rem;">Coverage Examples</h4>
+                <div class="articles-grid">
+                    
+                    <div class="article-card card-left">
+                        <span class="bias-badge badge-left">Left</span>
+                        <div class="article-source" id="source-left">Source</div>
+                        <div class="article-headline" id="headline-left">Headline</div>
+                    </div>
+
+                    <div class="article-card card-center">
+                        <span class="bias-badge badge-center">Center</span>
+                        <div class="article-source" id="source-center">Source</div>
+                        <div class="article-headline" id="headline-center">Headline</div>
+                    </div>
+
+                    <div class="article-card card-right">
+                        <span class="bias-badge badge-right">Right</span>
+                        <div class="article-source" id="source-right">Source</div>
+                        <div class="article-headline" id="headline-right">Headline</div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Mock Data for the Prototype
+        const mockData = [
+            {
+                id: 1,
+                title: "Global AI Regulation Bill Passed",
+                summary: "A comprehensive bill regulating artificial intelligence development has been signed into law, aiming to balance innovation with public safety.",
+                distribution: { left: 45, center: 20, right: 35 },
+                articles: {
+                    left: { source: "The Tribune", headline: "Tech workers unionize, praise historic AI safety bill prioritizing humanity" },
+                    center: { source: "The Wire", headline: "Details of the new global AI regulatory framework and its timeline" },
+                    right: { source: "Daily Chronicle", headline: "Tech CEOs warn new AI mandates will stifle innovation and kill jobs" }
+                }
+            },
+            {
+                id: 2,
+                title: "New Electric Vehicle Mandate Announced",
+                summary: "The government has announced an aggressive target to completely phase out the sale of new gas-powered vehicles by the year 2035.",
+                distribution: { left: 50, center: 15, right: 35 },
+                articles: {
+                    left: { source: "EcoJournal", headline: "A monumental leap forward for global climate action and clean air" },
+                    center: { source: "Standard News", headline: "Government outlines 2035 EV transition goals and infrastructure plans" },
+                    right: { source: "Business Post", headline: "Automakers push back on unrealistic and costly EV timelines" }
+                }
+            },
+            {
+                id: 3,
+                title: "Central Bank Keeps Interest Rates Unchanged",
+                summary: "Interest rates will remain steady for the next quarter amid lingering inflation concerns and mixed economic growth signals.",
+                distribution: { left: 25, center: 50, right: 25 },
+                articles: {
+                    left: { source: "Progress Today", headline: "Working families still struggling with living costs despite steady rates" },
+                    center: { source: "Financial Ledger", headline: "Central Bank pauses rate hikes, closely monitors inflation data" },
+                    right: { source: "Market Watch", headline: "Markets react nervously as Central Bank refuses to cut rates" }
+                }
+            }
+        ];
+
+        const storyListEl = document.getElementById('story-list');
+        const mainTitleEl = document.getElementById('main-title');
+        const mainSummaryEl = document.getElementById('main-summary');
+        const dashboardContentEl = document.getElementById('dashboard-content');
+
+        // Render the Sidebar Menu
+        function initApp() {
+            mockData.forEach((story, index) => {
+                const item = document.createElement('div');
+                item.className = 'story-item';
+                item.innerHTML = `
+                    <h3>${story.title}</h3>
+                    <p>${story.summary}</p>
+                `;
+                item.addEventListener('click', () => loadStory(story, item));
+                storyListEl.appendChild(item);
+
+                // Load the first story by default
+                if(index === 0) {
+                    loadStory(story, item);
+                }
+            });
+        }
+
+        // Load specific story into the main view
+        function loadStory(story, element) {
+            // Update active state in sidebar
+            document.querySelectorAll('.story-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+
+            // Update Text
+            mainTitleEl.textContent = story.title;
+            mainSummaryEl.textContent = story.summary;
+            dashboardContentEl.style.display = 'block';
+
+            // Update Bias Bar
+            const barLeft = document.getElementById('bar-left');
+            const barCenter = document.getElementById('bar-center');
+            const barRight = document.getElementById('bar-right');
+
+            barLeft.style.width = `${story.distribution.left}%`;
+            barLeft.textContent = `${story.distribution.left}%`;
+
+            barCenter.style.width = `${story.distribution.center}%`;
+            barCenter.textContent = `${story.distribution.center}%`;
+
+            barRight.style.width = `${story.distribution.right}%`;
+            barRight.textContent = `${story.distribution.right}%`;
+
+            // Update Articles
+            document.getElementById('source-left').textContent = story.articles.left.source;
+            document.getElementById('headline-left').textContent = story.articles.left.headline;
+
+            document.getElementById('source-center').textContent = story.articles.center.source;
+            document.getElementById('headline-center').textContent = story.articles.center.headline;
+
+            document.getElementById('source-right').textContent = story.articles.right.source;
+            document.getElementById('headline-right').textContent = story.articles.right.headline;
+        }
+
+        // Run the app
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
