@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spectrum News | Media Bias Tracker</title>
+    <title>द्वि दृष्टि News | Media Bias Tracker</title>
     <style>
         :root {
             --bg-color: #f8fafc;
@@ -13,6 +13,8 @@
             --center-color: #94a3b8; /* Gray */
             --right-color: #ef4444;  /* Red */
             --border-color: #e2e8f0;
+            --card-bg: #ffffff;
+            --primary: #0ea5e9;
         }
 
         * {
@@ -25,373 +27,698 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
 
+        /* --- Premium Titlebar --- */
         header {
-            background-color: #ffffff;
-            padding: 1rem 2rem;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
             border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            padding: 0.75rem 5%;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            gap: 2rem;
         }
 
-        header h1 {
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .brand svg {
+            width: 32px;
+            height: 32px;
+            color: var(--primary);
+        }
+
+        .brand h1 {
             font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            flex: 1;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-main);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search-bar {
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            font-size: 0.9rem;
+            width: 200px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-bar:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-subscribe {
+            background-color: var(--text-main);
+            color: white;
+            padding: 0.5rem 1.25rem;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: opacity 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-subscribe:hover {
+            opacity: 0.9;
+        }
+
+        /* --- Main Layout --- */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2.5rem 5%;
+        }
+
+        /* --- Featured Hero Story --- */
+        .hero-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 3rem;
+            margin-bottom: 4rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .hero-header {
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto 3rem auto;
+        }
+
+        .hero-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f0f9ff;
+            color: var(--primary);
+            padding: 0.35rem 1rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
             font-weight: 700;
+            margin-bottom: 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        #hero-title {
+            font-size: 2.75rem;
+            font-weight: 800;
+            margin-bottom: 1.25rem;
+            line-height: 1.15;
             color: #0f172a;
         }
 
-        .container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        /* Sidebar Styles */
-        aside {
-            width: 320px;
-            background-color: #ffffff;
-            border-right: 1px solid var(--border-color);
-            overflow-y: auto;
-            padding: 1rem 0;
-        }
-
-        .sidebar-title {
-            padding: 0 1.5rem 0.5rem;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        #hero-summary {
+            font-size: 1.25rem;
             color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .story-item {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .story-item:hover {
-            background-color: #f1f5f9;
-        }
-
-        .story-item.active {
-            background-color: #e2e8f0;
-            border-left: 4px solid var(--text-main);
-        }
-
-        .story-item h3 {
-            font-size: 1rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .story-item p {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Main Content Styles */
-        main {
-            flex: 1;
-            padding: 2rem 3rem;
-            overflow-y: auto;
-            background-color: var(--bg-color);
-        }
-
-        #main-title {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        #main-summary {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            margin-bottom: 2rem;
             line-height: 1.6;
         }
 
-        /* Bias Bar Visualization */
-        .bias-section {
-            background: #ffffff;
-            padding: 2rem;
+        /* Bias Visualization Area */
+        .bias-dashboard {
+            background: var(--bg-color);
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            margin-bottom: 2rem;
-        }
-
-        .bias-section h4 {
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-        }
-
-        .bias-bar {
-            display: flex;
-            height: 24px;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 1rem;
-        }
-
-        .bias-segment {
+            padding: 2.5rem;
+            margin-bottom: 3rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 0.75rem;
-            font-weight: bold;
-            transition: width 0.5s ease-in-out;
+            gap: 5rem;
+            border: 1px solid var(--border-color);
         }
 
-        .bias-left { background-color: var(--left-color); }
-        .bias-center { background-color: var(--center-color); }
-        .bias-right { background-color: var(--right-color); }
+        .bias-pie-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
 
-        .bias-labels {
+        .bias-pie {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .bias-pie::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            background-color: var(--bg-color);
+            border-radius: 50%;
+        }
+
+        .bias-legend {
             display: flex;
-            justify-content: space-between;
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            font-weight: 600;
+            flex-direction: column;
+            gap: 1.25rem;
         }
 
-        /* Articles Grid */
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .legend-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+        }
+
+        /* Articles Grid in Hero */
         .articles-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
+            gap: 2rem;
         }
 
+        .article-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .column-header {
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--border-color);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Clickable Article Cards */
         .article-card {
-            background: #ffffff;
-            border-radius: 8px;
+            display: block;
+            text-decoration: none;
+            background: var(--card-bg);
+            border-radius: 10px;
             padding: 1.5rem;
-            border-top: 4px solid transparent;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 4px solid transparent;
+            border-top: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+            position: relative;
         }
 
-        .card-left { border-top-color: var(--left-color); }
-        .card-center { border-top-color: var(--center-color); }
-        .card-right { border-top-color: var(--right-color); }
-
-        .bias-badge {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            color: white;
+        .article-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+            border-top-color: #cbd5e1;
+            border-right-color: #cbd5e1;
+            border-bottom-color: #cbd5e1;
         }
 
-        .badge-left { background-color: var(--left-color); }
-        .badge-center { background-color: var(--center-color); }
-        .badge-right { background-color: var(--right-color); }
+        .card-left { border-left-color: var(--left-color); }
+        .card-center { border-left-color: var(--center-color); }
+        .card-right { border-left-color: var(--right-color); }
 
         .article-source {
-            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.8rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-weight: 800;
+        }
+
+        .article-source .icon {
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .article-card:hover .article-source .icon {
+            opacity: 1;
+            color: var(--primary);
         }
 
         .article-headline {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 600;
             line-height: 1.4;
+            color: var(--text-main);
+        }
+
+        /* --- Other Stories Grid --- */
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .other-stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .mini-story-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .mini-story-card:hover {
+            border-color: var(--text-muted);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px -5px rgba(0,0,0,0.08);
+        }
+
+        .mini-story-title {
+            font-size: 1.35rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+            color: var(--text-main);
+        }
+
+        .mini-story-summary {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.5;
+        }
+
+        .mini-bias-bar {
+            display: flex;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            width: 100%;
         }
 
         /* Responsive */
         @media (max-width: 1024px) {
+            .bias-dashboard {
+                flex-direction: column;
+                gap: 2rem;
+            }
             .articles-grid {
                 grid-template-columns: 1fr;
+            }
+            .nav-links {
+                display: none; /* Hide nav on tablets */
             }
         }
 
         @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-            aside {
-                width: 100%;
-                height: 250px;
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
-            }
-            main {
-                padding: 1.5rem;
-            }
+            #hero-title { font-size: 2rem; }
+            .hero-section { padding: 1.5rem; }
+            .header-actions { display: none; } /* Hide search on mobile */
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Spectrum News <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">Hackathon Prototype</span></h1>
+        <div class="header-content">
+            <a href="#" class="brand">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 12a10 10 0 1 0 20 0 10 10 0 1 0-20 0"></path>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    <path d="M2 12h20"></path>
+                </svg>
+                <h1>द्वि दृष्टि News</h1>
+            </a>
+            
+            <nav class="nav-links">
+                <a href="#" class="active">Top Stories</a>
+                <a href="#">Politics</a>
+                <a href="#">Technology</a>
+                <a href="#">Business</a>
+                <a href="#">Science</a>
+            </nav>
+
+            <div class="header-actions">
+                <input type="text" placeholder="Search topics..." class="search-bar">
+                <button class="btn-subscribe">Sign In</button>
+            </div>
+        </div>
     </header>
 
     <div class="container">
-        <aside>
-            <div class="sidebar-title">Trending Stories</div>
-            <div id="story-list">
+        
+        <section class="hero-section" id="hero-section">
+            <div class="hero-header">
+                <span class="hero-label">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    Trending Now
+                </span>
+                <h2 id="hero-title">Loading...</h2>
+                <p id="hero-summary">...</p>
+            </div>
+
+            <div class="bias-dashboard">
+                <div class="bias-pie-container">
+                    <div id="bias-pie" class="bias-pie"></div>
                 </div>
-        </aside>
-
-        <main>
-            <h2 id="main-title">Select a story</h2>
-            <p id="main-summary">Click on a trending story from the sidebar to view its coverage across the political spectrum.</p>
-
-            <div id="dashboard-content" style="display: none;">
                 
-                <div class="bias-section">
-                    <h4>Bias Distribution</h4>
-                    <div class="bias-bar">
-                        <div id="bar-left" class="bias-segment bias-left"></div>
-                        <div id="bar-center" class="bias-segment bias-center"></div>
-                        <div id="bar-right" class="bias-segment bias-right"></div>
+                <div class="bias-legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: var(--left-color)"></div>
+                        <span>Left Leaning (<span id="pct-left">0</span>%)</span>
                     </div>
-                    <div class="bias-labels">
-                        <span style="color: var(--left-color)">Left</span>
-                        <span style="color: var(--center-color)">Center</span>
-                        <span style="color: var(--right-color)">Right</span>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: var(--center-color)"></div>
+                        <span>Center (<span id="pct-center">0</span>%)</span>
                     </div>
-                </div>
-
-                <h4 style="margin-bottom: 1rem; font-size: 1.1rem;">Coverage Examples</h4>
-                <div class="articles-grid">
-                    
-                    <div class="article-card card-left">
-                        <span class="bias-badge badge-left">Left</span>
-                        <div class="article-source" id="source-left">Source</div>
-                        <div class="article-headline" id="headline-left">Headline</div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: var(--right-color)"></div>
+                        <span>Right Leaning (<span id="pct-right">0</span>%)</span>
                     </div>
-
-                    <div class="article-card card-center">
-                        <span class="bias-badge badge-center">Center</span>
-                        <div class="article-source" id="source-center">Source</div>
-                        <div class="article-headline" id="headline-center">Headline</div>
-                    </div>
-
-                    <div class="article-card card-right">
-                        <span class="bias-badge badge-right">Right</span>
-                        <div class="article-source" id="source-right">Source</div>
-                        <div class="article-headline" id="headline-right">Headline</div>
-                    </div>
-
                 </div>
             </div>
-        </main>
+
+            <div class="articles-grid">
+                <div class="article-column">
+                    <div class="column-header" style="color: var(--left-color)">Left Leaning Coverage</div>
+                    <div id="articles-left-container"></div>
+                </div>
+                <div class="article-column">
+                    <div class="column-header" style="color: var(--center-color)">Center Coverage</div>
+                    <div id="articles-center-container"></div>
+                </div>
+                <div class="article-column">
+                    <div class="column-header" style="color: var(--right-color)">Right Leaning Coverage</div>
+                    <div id="articles-right-container"></div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h3 class="section-title">More Trending Topics</h3>
+            <div id="other-stories-grid" class="other-stories-grid">
+                </div>
+        </section>
+
     </div>
 
     <script>
-        // Mock Data for the Prototype
+        // Expanded Mock Data with URLs for redirects
         const mockData = [
             {
                 id: 1,
                 title: "Global AI Regulation Bill Passed",
-                summary: "A comprehensive bill regulating artificial intelligence development has been signed into law, aiming to balance innovation with public safety.",
+                summary: "A comprehensive bill regulating artificial intelligence development has been signed into law, aiming to balance rapid innovation with stringent public safety oversight.",
                 distribution: { left: 45, center: 20, right: 35 },
                 articles: {
-                    left: { source: "The Tribune", headline: "Tech workers unionize, praise historic AI safety bill prioritizing humanity" },
-                    center: { source: "The Wire", headline: "Details of the new global AI regulatory framework and its timeline" },
-                    right: { source: "Daily Chronicle", headline: "Tech CEOs warn new AI mandates will stifle innovation and kill jobs" }
+                    left: [
+                        { source: "The Tribune", headline: "Tech workers unionize, praise historic AI safety bill prioritizing humanity", url: "#" },
+                        { source: "Progress Today", headline: "Why the new AI regulations are a massive win for civil rights", url: "#" }
+                    ],
+                    center: [
+                        { source: "The Wire", headline: "Details of the new global AI regulatory framework and its timeline", url: "#" },
+                        { source: "Global Policy", headline: "Senate passes AI bill with bipartisan support", url: "#" }
+                    ],
+                    right: [
+                        { source: "Daily Chronicle", headline: "Tech CEOs warn new AI mandates will stifle innovation and kill jobs", url: "#" },
+                        { source: "Free Market Times", headline: "Heavy-handed government AI regulations threaten competitiveness", url: "#" }
+                    ]
                 }
             },
             {
                 id: 2,
                 title: "New Electric Vehicle Mandate Announced",
                 summary: "The government has announced an aggressive target to completely phase out the sale of new gas-powered vehicles by the year 2035.",
-                distribution: { left: 50, center: 15, right: 35 },
+                distribution: { left: 55, center: 10, right: 35 },
                 articles: {
-                    left: { source: "EcoJournal", headline: "A monumental leap forward for global climate action and clean air" },
-                    center: { source: "Standard News", headline: "Government outlines 2035 EV transition goals and infrastructure plans" },
-                    right: { source: "Business Post", headline: "Automakers push back on unrealistic and costly EV timelines" }
+                    left: [
+                        { source: "EcoJournal", headline: "A monumental leap forward for global climate action and clean air", url: "#" },
+                        { source: "Green Future", headline: "The 2035 EV mandate: A crucial step to saving our warming planet", url: "#" }
+                    ],
+                    center: [
+                        { source: "Standard News", headline: "Government outlines 2035 EV transition goals and infrastructure plans", url: "#" }
+                    ],
+                    right: [
+                        { source: "Business Post", headline: "Automakers push back on unrealistic and costly EV timelines", url: "#" },
+                        { source: "The Motorist", headline: "Consumer choice destroyed: Government bans gas cars by 2035", url: "#" }
+                    ]
                 }
             },
             {
                 id: 3,
                 title: "Central Bank Keeps Interest Rates Unchanged",
-                summary: "Interest rates will remain steady for the next quarter amid lingering inflation concerns and mixed economic growth signals.",
+                summary: "Interest rates will remain steady for the next quarter amid lingering inflation concerns and mixed economic growth signals across major sectors.",
                 distribution: { left: 25, center: 50, right: 25 },
                 articles: {
-                    left: { source: "Progress Today", headline: "Working families still struggling with living costs despite steady rates" },
-                    center: { source: "Financial Ledger", headline: "Central Bank pauses rate hikes, closely monitors inflation data" },
-                    right: { source: "Market Watch", headline: "Markets react nervously as Central Bank refuses to cut rates" }
+                    left: [
+                        { source: "Labor Post", headline: "Central bank ignores wage stagnation, opts to hold rates", url: "#" },
+                        { source: "Worker's Daily", headline: "Housing crisis worsens as rates remain untouchable", url: "#" }
+                    ],
+                    center: [
+                        { source: "Financial Ledger", headline: "Central Bank pauses rate hikes, closely monitors inflation data", url: "#" },
+                        { source: "Global Finance", headline: "Federal Reserve maintains current rates in unanimous decision", url: "#" }
+                    ],
+                    right: [
+                        { source: "Market Watch", headline: "Markets react nervously as Central Bank refuses to cut rates to spur growth", url: "#" },
+                        { source: "Capital Review", headline: "High rates continue to punish small business borrowing", url: "#" }
+                    ]
+                }
+            },
+            {
+                id: 4,
+                title: "Major Tech Firm Announces Massive Layoffs",
+                summary: "One of the world's largest technology companies has announced plans to cut 15% of its workforce, citing economic headwinds and restructuring for AI.",
+                distribution: { left: 60, center: 20, right: 20 },
+                articles: {
+                    left: [
+                        { source: "Worker's Voice", headline: "Corporate greed on display as tech giant slashes thousands of jobs", url: "#" },
+                        { source: "The Advocate", headline: "Laid-off tech workers demand better severance and union protection", url: "#" }
+                    ],
+                    center: [
+                        { source: "Tech Daily", headline: "Tech firm cuts 15% of workforce in major restructuring move", url: "#" }
+                    ],
+                    right: [
+                        { source: "Investor Times", headline: "Tech firm makes necessary cuts to trim fat and boost shareholder value", url: "#" },
+                        { source: "Market Watch", headline: "Stock surges as tech giant announces efficiency and cost-cutting measures", url: "#" }
+                    ]
+                }
+            },
+            {
+                id: 5,
+                title: "New Healthcare Subsidy Bill Sent to Desk",
+                summary: "A newly passed legislative package promises to expand federal healthcare subsidies for middle-income families, sparking debate over national debt.",
+                distribution: { left: 50, center: 15, right: 35 },
+                articles: {
+                    left: [
+                        { source: "Health Today", headline: "Millions to gain vital medical coverage under new subsidy plan", url: "#" }
+                    ],
+                    center: [
+                        { source: "Civic News", headline: "Congress passes healthcare expansion bill", url: "#" },
+                        { source: "Policy Weekly", headline: "Breakdown: Who qualifies for the new healthcare subsidies?", url: "#" }
+                    ],
+                    right: [
+                        { source: "Fiscal Conservative", headline: "Taxpayers foot the bill for massive new healthcare entitlement", url: "#" },
+                        { source: "Liberty Daily", headline: "Another step towards socialized medicine passes Congress", url: "#" }
+                    ]
+                }
+            },
+            {
+                id: 6,
+                title: "Private Space Mission Reaches Mars Orbit",
+                summary: "A commercial aerospace company has successfully put an uncrewed capsule into orbit around Mars, marking a new era in private space exploration.",
+                distribution: { left: 20, center: 60, right: 20 },
+                articles: {
+                    left: [
+                        { source: "Science Left", headline: "While billions are spent in space, social programs starve at home", url: "#" }
+                    ],
+                    center: [
+                        { source: "Space Journal", headline: "Historic commercial mission successfully enters Martian orbit", url: "#" },
+                        { source: "Global News", headline: "What the new Mars mission means for future human colonies", url: "#" }
+                    ],
+                    right: [
+                        { source: "Free Enterprise", headline: "Private sector triumph: Commercial spaceflight leaves NASA behind", url: "#" }
+                    ]
+                }
+            },
+            {
+                id: 7,
+                title: "New Tariffs Imposed on Tech Imports",
+                summary: "The administration has slapped heavy tariffs on imported semiconductors and tech hardware, citing national security and domestic manufacturing.",
+                distribution: { left: 30, center: 30, right: 40 },
+                articles: {
+                    left: [
+                        { source: "Global Worker", headline: "Tariffs fail to address the real issues of worker exploitation abroad", url: "#" }
+                    ],
+                    center: [
+                        { source: "Trade Watch", headline: "Administration announces 25% tariff on imported semiconductors", url: "#" },
+                        { source: "Economy Now", headline: "How the new tech tariffs will affect consumer electronic prices", url: "#" }
+                    ],
+                    right: [
+                        { source: "National Post", headline: "A necessary move to protect American intellectual property", url: "#" },
+                        { source: "Patriot News", headline: "Bringing jobs home: Tariffs will spark a domestic manufacturing boom", url: "#" }
+                    ]
                 }
             }
         ];
 
-        const storyListEl = document.getElementById('story-list');
-        const mainTitleEl = document.getElementById('main-title');
-        const mainSummaryEl = document.getElementById('main-summary');
-        const dashboardContentEl = document.getElementById('dashboard-content');
-
-        // Render the Sidebar Menu
+        // Core Functions
         function initApp() {
-            mockData.forEach((story, index) => {
-                const item = document.createElement('div');
-                item.className = 'story-item';
-                item.innerHTML = `
-                    <h3>${story.title}</h3>
-                    <p>${story.summary}</p>
-                `;
-                item.addEventListener('click', () => loadStory(story, item));
-                storyListEl.appendChild(item);
+            setStory(mockData[0].id);
+        }
 
-                // Load the first story by default
-                if(index === 0) {
-                    loadStory(story, item);
-                }
+        function setStory(storyId) {
+            const selectedStory = mockData.find(s => s.id === storyId);
+            if (!selectedStory) return;
+
+            renderHeroStory(selectedStory);
+            renderOtherStoriesGrid(selectedStory.id);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderHeroStory(story) {
+            document.getElementById('hero-title').textContent = story.title;
+            document.getElementById('hero-summary').textContent = story.summary;
+
+            // Pie Chart Update
+            const pie = document.getElementById('bias-pie');
+            const l = story.distribution.left;
+            const c = story.distribution.center;
+            const r = story.distribution.right;
+            const centerEnd = l + c;
+
+            pie.style.background = `conic-gradient(
+                var(--left-color) 0% ${l}%, 
+                var(--center-color) ${l}% ${centerEnd}%, 
+                var(--right-color) ${centerEnd}% 100%
+            )`;
+
+            document.getElementById('pct-left').textContent = l;
+            document.getElementById('pct-center').textContent = c;
+            document.getElementById('pct-right').textContent = r;
+
+            renderArticleCards(story.articles.left, 'articles-left-container', 'card-left');
+            renderArticleCards(story.articles.center, 'articles-center-container', 'card-center');
+            renderArticleCards(story.articles.right, 'articles-right-container', 'card-right');
+        }
+
+        function renderArticleCards(articlesArray, containerId, biasClass) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = ''; 
+            
+            articlesArray.forEach(article => {
+                // Now rendered as an actual link (<a> tag)
+                const card = document.createElement('a');
+                card.href = article.url;
+                card.target = "_blank"; // Opens in new tab
+                card.className = `article-card ${biasClass}`;
+                
+                card.innerHTML = `
+                    <div class="article-source">
+                        ${article.source} 
+                        <span class="icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></span>
+                    </div>
+                    <div class="article-headline">${article.headline}</div>
+                `;
+                container.appendChild(card);
             });
         }
 
-        // Load specific story into the main view
-        function loadStory(story, element) {
-            // Update active state in sidebar
-            document.querySelectorAll('.story-item').forEach(el => el.classList.remove('active'));
-            element.classList.add('active');
+        function renderOtherStoriesGrid(excludeId) {
+            const grid = document.getElementById('other-stories-grid');
+            grid.innerHTML = ''; 
 
-            // Update Text
-            mainTitleEl.textContent = story.title;
-            mainSummaryEl.textContent = story.summary;
-            dashboardContentEl.style.display = 'block';
+            const otherStories = mockData.filter(s => s.id !== excludeId);
 
-            // Update Bias Bar
-            const barLeft = document.getElementById('bar-left');
-            const barCenter = document.getElementById('bar-center');
-            const barRight = document.getElementById('bar-right');
+            otherStories.forEach(story => {
+                const card = document.createElement('div');
+                card.className = 'mini-story-card';
+                card.onclick = () => setStory(story.id);
 
-            barLeft.style.width = `${story.distribution.left}%`;
-            barLeft.textContent = `${story.distribution.left}%`;
+                const l = story.distribution.left;
+                const c = story.distribution.center;
+                const r = story.distribution.right;
 
-            barCenter.style.width = `${story.distribution.center}%`;
-            barCenter.textContent = `${story.distribution.center}%`;
-
-            barRight.style.width = `${story.distribution.right}%`;
-            barRight.textContent = `${story.distribution.right}%`;
-
-            // Update Articles
-            document.getElementById('source-left').textContent = story.articles.left.source;
-            document.getElementById('headline-left').textContent = story.articles.left.headline;
-
-            document.getElementById('source-center').textContent = story.articles.center.source;
-            document.getElementById('headline-center').textContent = story.articles.center.headline;
-
-            document.getElementById('source-right').textContent = story.articles.right.source;
-            document.getElementById('headline-right').textContent = story.articles.right.headline;
+                card.innerHTML = `
+                    <div>
+                        <h4 class="mini-story-title">${story.title}</h4>
+                        <p class="mini-story-summary">${story.summary}</p>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Coverage Bias Breakdown</div>
+                        <div class="mini-bias-bar">
+                            <div style="width: ${l}%; background-color: var(--left-color)"></div>
+                            <div style="width: ${c}%; background-color: var(--center-color)"></div>
+                            <div style="width: ${r}%; background-color: var(--right-color)"></div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
         }
 
-        // Run the app
         document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
